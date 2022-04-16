@@ -52,7 +52,7 @@
     [(FunPlain xs e)
      (seq (Label (symbol->label f))
           ;; TODO: check arity
-          (Cmp (length xs) r10)
+          (Cmp r10 (length xs))
           (Jne 'raise_error_align)
           (compile-e e (reverse xs))
           (Add rsp (* 8 (length xs)))
