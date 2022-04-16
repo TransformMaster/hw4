@@ -7,7 +7,6 @@
 (define rbx 'rbx) ; heap
 (define rsp 'rsp) ; stack
 (define rdi 'rdi) ; arg
-(define r10 'r10) ; arity
 
 ;; type CEnv = [Listof Variable]
 
@@ -52,8 +51,6 @@
     [(FunPlain xs e)
      (seq (Label (symbol->label f))
           ;; TODO: check arity
-          (Cmp r10 ((length xs)))
-          (Jne 'raise_error_align)
           (compile-e e (reverse xs))
           (Add rsp (* 8 (length xs)))
           (Ret))]
@@ -174,7 +171,6 @@
          (Push rax)
          (compile-es es (cons #f c))
          ;; TODO: communicate argument count to called function
-         (Mov r10 (length es))
          (Jmp (symbol->label f))
          (Label r))))
 
