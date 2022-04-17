@@ -72,7 +72,6 @@
           (Label l1)
           (Pop rax)
           (Mov (Offset rbx 0) rax)
-          (Add rsp 8)
           (Add rbx 8)
           (Sub r10 1)
           (Cmp r10 (length xs))
