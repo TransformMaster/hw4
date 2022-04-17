@@ -70,7 +70,7 @@
           (Mov r9 rbx)
           (Or r9 type-cons)
           (Label l1)
-          (Mov rax (Offset rsp 0))
+          (Pop rax)
           (Mov (Offset rbx 0) rax)
           (Add rsp 8)
           (Add rbx 8)
