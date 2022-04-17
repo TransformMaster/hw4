@@ -40,14 +40,6 @@
   
   ;; Iniquity+
   (check-equal? (run '(define (f x) x)
-                     '(define (f1 y) y)
-                     '(f (f1)))
-                'err)
-  (check-equal? (run '(define (f x) x)
-                     '(define (f1 y) y)
-                     '(f (f1 1)))
-                1)
-  (check-equal? (run '(define (f x) x)
                      '(f))
                 'err)
   (check-equal? (run '(define (f) 1)
