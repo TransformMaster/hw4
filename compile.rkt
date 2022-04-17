@@ -80,7 +80,7 @@
           (Label l2)
           (Push rax)
           (compile-e e (cons x (reverse xs)))
-          (Add rsp (* 8 (+ (length xs) 1)))
+          (Add rsp (* 8 (length (cons x (reverse xs)))))
           (Ret)))]
     ;; TODO: handle other kinds of functions
     [_
