@@ -262,6 +262,7 @@
 (define (compile-apply f es e c)
   ;; TODO: implement apply
   (if (list? e)
+      (let ((r (gensym 'ret)))
       (seq
        (Lea rax r)
        (Push rax)
@@ -271,7 +272,7 @@
        (Mov r10 (+ (length es) (length e)))
        (Jmp (symbol->label f))
        (Label r)
-       )
+       ))
       (seq (Jmp 'raise_error_align))
       )
   )
