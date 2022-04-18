@@ -49,6 +49,14 @@
 ;; Id Fun -> Asm
 (define (compile-fun f fun)
   (match fun
+    [(FunCase cs)
+     (match cs
+       ['() (seq (Label (symbol->label f))
+                 (Jmp 'raise_error_align))]
+       [cs (seq (Label (symbol->label f))
+                (compile-fun-helper cs))]
+       )
+     ]
     [(FunPlain xs e)
      (seq (Label (symbol->label f))
           ;; TODO: check arity
@@ -86,7 +94,52 @@
     [_
      (seq)]))
 
-
+(define (compile-fun-helper cs)
+  (match cs
+    ['() (seq (Jmp 'raise_error_align))]
+    [(cons c cs) (match c
+                   [(FunPlain xs e)  (let ((l1 (gensym 'jump)))
+                                           (seq 
+                                         ;; TODO: check arity
+                                         (Cmp r10 (length xs))
+                                         (Jne l1)
+                                         (compile-e e (reverse xs))
+                                         (Add rsp (* 8 (length xs)))
+                                         (Ret)
+                                         (Label l1)
+                                         ))]
+                   [(FunRest xs x e)
+                    (let ((l1 (gensym 'loop))
+                          (l2 (gensym 'empty))
+                          (l3 (gensym 'empty))
+                          )
+                      (seq 
+                           ;; TODO: check arity
+                           (Cmp r10 (length xs))
+                           (Jl l3)
+                           (Cmp r10 (length xs))
+                           (compile-value '())
+                           (Je l2)
+                           (Label l1)
+                           (Mov (Offset rbx 0) rax)
+                           (Pop rax)
+                           (Mov (Offset rbx 8) rax)
+                           (Mov rax rbx)
+                           (Or rax type-cons)
+                           (Add rbx 16)
+                           (Sub r10 1)
+                           (Cmp r10 (length xs))
+                           (Jne l1)
+                           (Label l2)
+                           (Push rax)
+                           (compile-e e (cons x (reverse xs)))
+                           (Add rsp (* 8 (add1 (length xs))))
+                           (Ret)
+                           (Label l3)
+                           )
+                      )]
+                   )])
+  )
 
 
 ;; Expr CEnv -> Asm
