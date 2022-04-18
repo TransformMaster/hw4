@@ -261,7 +261,20 @@
 ;; Id [Listof Expr] Expr CEnv -> Asm
 (define (compile-apply f es e c)
   ;; TODO: implement apply
-  (seq))
+  (if (list? e)
+      (seq
+       (Lea rax r)
+       (Push rax)
+       (compile-es es (cons #f c))
+       (compile-es e (cons #f c))
+       ;; TODO: communicate argument count to called function
+       (Mov r10 (+ (length es) (length e)))
+       (Jmp (symbol->label f))
+       (Label r)
+       )
+      (seq (Jmp 'raise_error_align))
+      )
+  )
 
 ;; [Listof Expr] CEnv -> Asm
 (define (compile-es es c)
