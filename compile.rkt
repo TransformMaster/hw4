@@ -107,11 +107,12 @@
                                          (Add rsp (* 8 (length xs)))
                                          (Ret)
                                          (Label l1)
+                                         (compile-fun-helper cs)
                                          ))]
                    [(FunRest xs x e)
                     (let ((l1 (gensym 'loop))
                           (l2 (gensym 'empty))
-                          (l3 (gensym 'empty))
+                          (l3 (gensym 'jump))
                           )
                       (seq 
                            ;; TODO: check arity
@@ -136,6 +137,7 @@
                            (Add rsp (* 8 (add1 (length xs))))
                            (Ret)
                            (Label l3)
+                           (compile-fun-helper cs)
                            )
                       )]
                    )])
