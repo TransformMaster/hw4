@@ -261,19 +261,21 @@
 ;; Id [Listof Expr] Expr CEnv -> Asm
 (define (compile-apply f es e c)
   ;; TODO: implement apply
-      (let ((r (gensym 'ret)))
-      (seq
-       (Lea rax r)
-       (Push rax)
-       (compile-es es (cons #f c))
-       (compile-es e (cons #f c))
-       ;; TODO: communicate argument count to called function
-       (Mov r10 (+ (length es) (length e)))
-       (Jmp (symbol->label f))
-       (Label r)
-       ))
-      )
-
+  (let ((r (gensym 'ret))
+        (l1 (gensym 'check)))
+    (seq (Lea rax r)
+         (Push rax)
+         (compile-es es (cons #f c))
+         (compile-e e (cons #f c))
+         (Cmp rax val-empty)
+         (Je l1)
+         (assert-cons rax)
+         (Label l1)
+         (Push rax)
+         ;; TODO: communicate argument count to called function
+         (Mov r10 (length es))
+         (Jmp (symbol->label f))
+         (Label r))))
 
 ;; [Listof Expr] CEnv -> Asm
 (define (compile-es es c)
@@ -310,32 +312,3 @@
          (string->list (symbol->string s))))
     "_"
     (number->string (eq-hash-code s) 16))))
-
-(define (assert-type mask type)
-  (λ (arg)
-    (seq (Mov r9 arg)
-         (And r9 mask)
-         (Cmp r9 type)
-         (Jne 'raise_error_align))))
-
-(define (type-pred mask type)
-  (let ((l (gensym)))
-    (seq (And rax mask)
-         (Cmp rax type)
-         (Mov rax (imm->bits #t))
-         (Je l)
-         (Mov rax (imm->bits #f))
-         (Label l))))
-
-(define assert-integer
-  (assert-type mask-int type-int))
-(define assert-char
-  (assert-type mask-char type-char))
-(define assert-box
-  (assert-type ptr-mask type-box))
-(define assert-cons
-  (assert-type ptr-mask type-cons))
-(define assert-vector
-  (assert-type ptr-mask type-vect))
-(define assert-string
-  (assert-type ptr-mask type-str))
