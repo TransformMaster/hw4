@@ -61,6 +61,7 @@
     [(FunPlain xs e)
      (seq (Label (symbol->label f))
           ;; TODO: check arity
+          (Pop r10)
           (Cmp r10 (length xs))
           (Jne 'raise_error_align)
           (compile-e e (reverse xs))
@@ -71,6 +72,7 @@
            (l2 (gensym 'empty)))
      (seq (Label (symbol->label f))
           ;; TODO: check arity
+          (Pop r10)
           (Cmp r10 (length xs))
           (Jl 'raise_error_align)
           (Cmp r10 (length xs))
@@ -102,6 +104,7 @@
                    [(FunPlain xs e)  (let ((l1 (gensym 'jump)))
                                            (seq 
                                          ;; TODO: check arity
+                                         (Pop r10)
                                          (Cmp r10 (length xs))
                                          (Jne l1)
                                          (compile-e e (reverse xs))
@@ -117,6 +120,7 @@
                           )
                       (seq 
                            ;; TODO: check arity
+                           (Pop r10)
                            (Cmp r10 (length xs))
                            (Jl l3)
                            (Cmp r10 (length xs))
@@ -256,6 +260,7 @@
          (compile-es es (cons #f c))
          ;; TODO: communicate argument count to called function
          (Mov r10 (length es))
+         (Push r10)
          (Jmp (symbol->label f))
          (Label r))))
 
@@ -269,6 +274,7 @@
          (compile-es es (cons #f c))
          ;; TODO: communicate argument count to called function
          (Mov r10 (length es))
+         (Push r10)
          (check-e e (cons #f c))
          (Jmp (symbol->label f))
          (Label r))))
@@ -279,6 +285,7 @@
     [_ (let ((l1 (gensym 'check))
              (l2 (gensym 'loop)))
      (seq
+        (Pop r10)
         (compile-e es c)
         (Label l2)
         (Cmp rax (imm->bits '()))
@@ -291,6 +298,7 @@
         (Add r10 1)
         (Jmp l2)
         (Label l1)
+        (Push r10)
         ))]
     )
   )
