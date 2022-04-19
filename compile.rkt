@@ -273,7 +273,7 @@
          (Label r))))
 
 (define (check-e es c)
-  (match e
+  (match es
     [(Empty) (seq)]
     [(Prim2 p e1 e2)
      (match p
