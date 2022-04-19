@@ -275,19 +275,23 @@
 (define (check-e es c)
   (match es
     [(Empty) (seq)]
-    [(Prim2 p e1 e2)
-     (match p
-       ['cons (seq
-               (compile-e e1 c)
-               (Push rax)
-               (Add r10 1)
-               (check-e e2 (cons #f c))
-               )]
-       [_ (seq
-           (Jmp 'raise_error_align))]
-       )]
-    [_ (seq
-           (Jmp 'raise_error_align))]))
+    [_ (let ((l1 (gensym 'check))
+             (l2 (gensym 'loop)))
+     (seq
+        (compile-e es c)
+        (Label l2)
+        (Cmp rax (imm->bits '()))
+        (Je l1)
+        (assert-cons rax)
+        (Xor rax type-cons)
+        (Push rax)
+        (Add r10 1)
+        (Mov rax (Offset rax 8))
+        (Jmp l2)
+        (Label l1)
+        ))]
+    )
+  )
 
 ;; [Listof Expr] CEnv -> Asm
 (define (compile-es es c)
