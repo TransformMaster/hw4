@@ -8,6 +8,7 @@
 (define rsp 'rsp) ; stack
 (define rdi 'rdi) ; arg
 (define r10 'r10)
+(define r9 'r9)
 
 ;; type CEnv = [Listof Variable]
 
@@ -284,9 +285,10 @@
         (Je l1)
         (assert-cons rax)
         (Xor rax type-cons)
-        (Push rax)
+        (Mov r9 (Offset rax 8))
+        (Push r9)
+        (Mov rax (Offset rax 0))
         (Add r10 1)
-        (Mov rax (Offset rax 8))
         (Jmp l2)
         (Label l1)
         ))]
