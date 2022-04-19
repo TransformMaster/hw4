@@ -266,16 +266,28 @@
     (seq (Lea rax r)
          (Push rax)
          (compile-es es (cons #f c))
-         (compile-e e (cons #f c))
-         (Cmp rax val-empty)
-         (Je l1)
-         (assert-cons rax)
-         (Label l1)
-         (Push rax)
          ;; TODO: communicate argument count to called function
          (Mov r10 (length es))
+         (check-e e (cons #f c))
          (Jmp (symbol->label f))
          (Label r))))
+
+(define (check-e es c)
+  (match e
+    [(Empty) (seq)]
+    [(Prim2 p e1 e2)
+     (match p
+       ['cons (seq
+               (compile-e e1 c)
+               (push rax)
+               (Add r10 1)
+               (check-e e2 (cons #f c))
+               )]
+       [_ (seq
+           (Jmp 'raise_error_align))]
+       )]
+    [_ (seq
+           (Jmp 'raise_error_align))]))
 
 ;; [Listof Expr] CEnv -> Asm
 (define (compile-es es c)
