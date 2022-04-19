@@ -285,7 +285,7 @@
          (Cmp rax val-empty)
          (Je l1)
          (assert-cons rax)
-         (label l1)
+         (Label l1)
          (check-list es c)))]
     ))
 
