@@ -274,7 +274,6 @@
        (Label r)
        ))
       )
-  )
 
 (define (check-list e c)
   (match e
