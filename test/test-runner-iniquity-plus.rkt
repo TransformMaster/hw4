@@ -189,8 +189,3 @@
                      '(let ((z 97))
                         (f z 98)))
                 (cons (void) "a")))
-(interp (parse '((define (add . xxs)
-	(if (empty? xxs))
-	0
-	(+ (car xxs) (apply add (cdr xxs))))
-(apply add (cons 1 (cons 2 (cons 3 '())))))))
