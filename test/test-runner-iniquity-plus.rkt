@@ -132,15 +132,10 @@
                      '(apply f 1 2 (cons 3 '())))
                 '(1 2 3))
   (check-equal? (run '(define (append . xss)
-                        (if (empty? xss)
-                            '()
-                            (if (empty? (car xss))
-                                (apply append (cdr xss))
-                                (cons (car (car xss))
-                                      (apply append (cdr (car xss)) (cdr xss))))))
+                       xss)
                      
                      '(append (cons 1 (cons 2 (cons 3 '())))))
-                '(1 2 3))
+                '((1 2 3)))
   )
 
 (define (test-runner-io run)
