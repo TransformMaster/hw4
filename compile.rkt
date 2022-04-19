@@ -277,10 +277,16 @@
 
 (define (check-list e c)
   (match e
-    [(Empty)            (seq)]
-    [_ (seq
-        {(compile-e e c)
-         (assert-cons rax)})]
+    ['() '()]
+    [(cons e es)
+     (let ((l1 (gensym 'empty)))
+     (seq
+         (compile-e e c)
+         (Cmp rax val-empty)
+         (Je l1)
+         (assert-cons rax)
+         (label l1)
+         (check-list es c)))]
     ))
 
 ;; [Listof Expr] CEnv -> Asm
