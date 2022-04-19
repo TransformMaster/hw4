@@ -138,8 +138,8 @@
                                 (apply append (cdr xss))
                                 (cons (car (car xss))
                                       (apply append (cdr (car xss)) (cdr xss))))))
-                     '(define (list . xs) xs)
-                     '(append (list 1 2 3) (list 4) (list 5 6 7)))
+                     
+                     '(append (cons 1 (cons 2 (cons 3 '()))) (cons 4 '()) (cons 5 (cons 5 (cons 7 '())))))
                 '(1 2 3 4 5 6 7))
   )
 
