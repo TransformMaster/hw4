@@ -261,16 +261,11 @@
 ;; Id [Listof Expr] Expr CEnv -> Asm
 (define (compile-apply f es e c)
   ;; TODO: implement apply
-      (let ((r (gensym 'ret))
-            (l1 (gensym 'empty)))
+      (let ((r (gensym 'ret)))
       (seq
        (Lea rax r)
        (Push rax)
-       (compile-e e c)
-       (Cmp rax val-empty)
-       (Je l1)
-       (assert-cons rax)
-       (Label l1)
+       (check-list e c)
        (compile-es es (cons #f c))
        (compile-es e (cons #f c))
        ;; TODO: communicate argument count to called function
@@ -280,6 +275,19 @@
        ))
       )
 
+(define (check-list e c)
+  (match e
+    ['() '()]
+    [e
+     (let ((l1 (gensym 'empty)))
+     (seq
+         (compile-e e c)
+         (Cmp rax val-empty)
+         (Je l1)
+         (assert-cons rax)
+         (Label l1)
+         ))]
+    ))
 
 ;; [Listof Expr] CEnv -> Asm
 (define (compile-es es c)
