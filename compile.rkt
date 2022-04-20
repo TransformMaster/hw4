@@ -284,7 +284,7 @@
         (Cmp rax (imm->bits '()))
         (Je l1)
         (assert-cons rax)
-        (Mov r9 rax)
+        (Mov r9 (Offset rax 0))
         (compile-op1 'car)
         (Push rax)
         (Mov rax r9)
