@@ -1,6 +1,6 @@
 #lang racket
 (provide (all-defined-out))
-(require "ast.rkt" "types.rkt" "compile-ops.rkt" a86/ast)
+(require "ast.rkt" "types.rkt" "compile-ops.rkt" "intern.rkt" a86/ast)
 
 ;; Registers used
 (define rax 'rax) ; return
@@ -20,7 +20,7 @@
            (Global 'entry)
            (Label 'entry)
            (Mov rbx rdi) ; recv heap pointer
-           (compile-e e '())
+           (compile-e (intern e) '())
            (Ret)
            (compile-defines ds)
            (Label 'raise_error_align)
@@ -63,7 +63,7 @@
           ;; TODO: check arity
           (Cmp r10 (length xs))
           (Jne 'raise_error_align)
-          (compile-e e (reverse xs))
+          (compile-e (intern e) (reverse xs))
           (Add rsp (* 8 (length xs)))
           (Ret))]
     [(FunRest xs x e)
@@ -88,7 +88,7 @@
           (Jne l1)
           (Label l2)
           (Push rax)
-          (compile-e e (cons x (reverse xs)))
+          (compile-e (intern e) (cons x (reverse xs)))
           (Add rsp (* 8 (add1 (length xs))))
           (Ret)))]
     ;; TODO: handle other kinds of functions
@@ -104,7 +104,7 @@
                                          ;; TODO: check arity
                                          (Cmp r10 (length xs))
                                          (Jne l1)
-                                         (compile-e e (reverse xs))
+                                         (compile-e (intern e) (reverse xs))
                                          (Add rsp (* 8 (length xs)))
                                          (Ret)
                                          (Label l1)
@@ -134,7 +134,7 @@
                            (Jne l1)
                            (Label l2)
                            (Push rax)
-                           (compile-e e (cons x (reverse xs)))
+                           (compile-e (intern e) (cons x (reverse xs)))
                            (Add rsp (* 8 (add1 (length xs))))
                            (Ret)
                            (Label l3)
