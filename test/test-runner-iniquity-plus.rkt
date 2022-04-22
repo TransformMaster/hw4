@@ -6,6 +6,10 @@
 
     ;; Iniquity tests
   (check-equal? (run
+                 '(define (f x) (eq? x "aaa"))
+                 '(f "aaa"))
+                #t)
+  (check-equal? (run
                  '(define (f x) x)
                  '(f 5))
                 5)
